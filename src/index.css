@@ -21,3 +21,27 @@ body {
   justify-content: center;
   font-family: "Space Grotesk", sans-serif;
 }
+
+.inputNumbers {
+  width: 100%;
+  font-family: Space Grotesk;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  padding: 1.1rem 0 1.1rem 1.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--Light-Grey, #dfdee0);
+  caret-color: #21092f;
+  margin-top: 0.9rem;
+  &:focus {
+    outline: 1px solid var(--Gradient, #6348fe);
+  }
+  &::placeholder {
+    color: var(--Deep-Violet, #21092f);
+    opacity: 0.25;
+  }
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+}

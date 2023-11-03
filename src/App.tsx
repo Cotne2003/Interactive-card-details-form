@@ -1,44 +1,147 @@
 import styled from "styled-components";
 import logo from "/card-logo.svg";
+import InputMask from "react-input-mask";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+
+type DataType = {
+  cardHolder: string;
+  cardNumbers: string;
+  cardMM: string;
+  cardYY: string;
+  cardCVC: string;
+};
 
 function App() {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<DataType>();
+
+  const onSubmit = () => {
+    setName(watch("cardHolder"));
+    setNums(watch("cardNumbers"));
+    setMm(watch("cardMM"));
+    setYy(watch("cardYY"));
+    setCvc(watch("cardCVC"));
+  };
+
+  const [nums, setNums] = useState("0000 0000 0000 0000");
+  const [name, setName] = useState("JANE APPLESEED");
+  const [mm, setMm] = useState("00");
+  const [yy, setYy] = useState("00");
+  const [cvc, setCvc] = useState("000");
+
   return (
     <StyledMain>
       <div>
         <FirstCard>
           <img src={logo} alt="" />
-          <StyledZeros>0000 0000 0000 0000</StyledZeros>
+          <StyledZeros>{nums}</StyledZeros>
           <FlexDiv>
-            <CardP>JANE APPLESEED</CardP>
-            <CardP>00/00</CardP>
+            <CardP>{name}</CardP>
+            <CardP>
+              {mm}/{yy}
+            </CardP>
           </FlexDiv>
         </FirstCard>
         <SecondCard>
-          <CardP>000</CardP>
+          <CardP>{cvc}</CardP>
         </SecondCard>
       </div>
-      <StyledForm>
-        <InputTitle>Cardholder Name</InputTitle>
-        <TopInputs placeholder="e.g. Jane Appleseed" type="text"></TopInputs>
-        <InputTitle style={{ marginTop: "2.6rem" }}>Card Number</InputTitle>
-        <TopInputs
-          placeholder="e.g. 1234 5678 9123 0000"
-          type="number"
-        ></TopInputs>
-        <FlexDiv style={{ gap: "2rem" }}>
-          <div style={{ width: "17rem" }}>
-            <InputTitle>Exp. Date (MM/YY)</InputTitle>
-            <div style={{ display: "flex", gap: "1rem" }}>
-              <TopInputs placeholder="MM" type="number"></TopInputs>
-              <TopInputs placeholder="YY" type="number"></TopInputs>
+      <StyledForm onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <InputTitle>Cardholder Name</InputTitle>
+          <TopInputs
+            placeholder="e.g. Jane Appleseed"
+            type="text"
+            {...register("cardHolder", {
+              required: { value: true, message: "Card name cant't be empty" },
+              minLength: {
+                value: 4,
+                message: "name must be more than 4 character",
+              },
+            })}
+            style={
+              errors.cardHolder?.message ? { outline: "1px solid red" } : {}
+            }
+          />
+          <ErrorP>{errors.cardHolder?.message}</ErrorP>
+          <InputTitle style={{ marginTop: "2.6rem" }}>Card Number</InputTitle>
+          <InputMask
+            className="inputNumbers"
+            mask={"9999 9999 9999 9999"}
+            maskChar={null}
+            placeholder="e.g. 1234 5678 9123 0000"
+            {...register("cardNumbers", {
+              required: { value: true, message: "Card numbers can't be empty" },
+              minLength: {
+                value: 19,
+                message: "Card numbers must be filled in completely",
+              },
+            })}
+            style={
+              errors.cardNumbers?.message ? { outline: "1px solid red" } : {}
+            }
+          ></InputMask>
+          <ErrorP>{errors.cardNumbers?.message}</ErrorP>
+          <FlexDiv style={{ gap: "2rem" }}>
+            <div style={{ width: "17rem" }}>
+              <InputTitle>Exp. Date (MM/YY)</InputTitle>
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <InputMask
+                  className="inputNumbers"
+                  mask={"99"}
+                  maskChar={null}
+                  placeholder="MM"
+                  {...register("cardMM", {
+                    required: { value: true, message: "Cant't be blank" },
+                    minLength: { value: 2, message: "Cant't be less than 2" },
+                  })}
+                  style={
+                    errors.cardMM?.message ? { outline: "1px solid red" } : {}
+                  }
+                ></InputMask>
+                <InputMask
+                  className="inputNumbers"
+                  mask={"99"}
+                  maskChar={null}
+                  placeholder="YY"
+                  {...register("cardYY", {
+                    required: { value: true, message: "Cant't be blank" },
+                    minLength: { value: 2, message: "Cant't be less than 2" },
+                  })}
+                  style={
+                    errors.cardYY?.message ? { outline: "1px solid red" } : {}
+                  }
+                ></InputMask>
+              </div>
+              <ErrorP>
+                {errors.cardYY?.message || errors.cardMM?.message}
+              </ErrorP>
             </div>
-          </div>
-          <div>
-            <InputTitle>cvc</InputTitle>
-            <TopInputs placeholder="e.g. 123"></TopInputs>
-          </div>
-        </FlexDiv>
-        <ConfirmButton>Confirm</ConfirmButton>
+            <div>
+              <InputTitle>cvc</InputTitle>
+              <InputMask
+                className="inputNumbers"
+                mask={"999"}
+                maskChar={null}
+                placeholder="e.g. 123"
+                {...register("cardCVC", {
+                  required: { value: true, message: "Cant't be blank" },
+                  minLength: { value: 3, message: "Cant't be less than 3" },
+                })}
+                style={
+                  errors.cardCVC?.message ? { outline: "1px solid red" } : {}
+                }
+              ></InputMask>
+              <ErrorP>{errors.cardCVC?.message}</ErrorP>
+            </div>
+          </FlexDiv>
+          <ConfirmButton type="submit">Confirm</ConfirmButton>
+        </div>
       </StyledForm>
     </StyledMain>
   );
@@ -47,9 +150,12 @@ function App() {
 export default App;
 
 const StyledMain = styled.main`
-  max-width: 105rem;
+  width: 105rem;
   display: flex;
   justify-content: space-between;
+  @media (max-width: 1099px) {
+    width: 100rem;
+  }
 `;
 
 const FirstCard = styled.div`
@@ -103,6 +209,8 @@ const SecondCard = styled.div`
 
 const StyledForm = styled.form`
   width: 38.1rem;
+  display: flex;
+  align-items: center;
 `;
 
 const InputTitle = styled.p`
@@ -135,6 +243,9 @@ const TopInputs = styled.input`
     color: var(--Deep-Violet, #21092f);
     opacity: 0.25;
   }
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
 `;
 
 const ConfirmButton = styled.button`
@@ -151,4 +262,11 @@ const ConfirmButton = styled.button`
   border: none;
   margin-top: 5.5rem;
   cursor: pointer;
+`;
+
+const ErrorP = styled.p`
+  height: 1.5rem;
+  color: #ff5050;
+  font-size: 1.2rem;
+  margin-top: 8px;
 `;
