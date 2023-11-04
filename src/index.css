@@ -45,3 +45,17 @@ body {
     -webkit-appearance: none;
   }
 }
+
+@media (max-width: 1023px) {
+  body {
+    display: block;
+    margin-top: 12rem;
+    background-image: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .inputNumbers {
+    width: 100%;
+  }
+}
